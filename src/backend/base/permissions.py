@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from django.contrib.auth.models import User
 import logging
 
 # create logger with 'spam_application'
@@ -7,11 +6,11 @@ logger = logging.getLogger('spam_application')
 logger.setLevel(logging.ERROR)
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsSafeOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj.owner == request.user
+        return False
 
 
 class IsOwnerOrStaff(permissions.BasePermission):

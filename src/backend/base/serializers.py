@@ -1,23 +1,17 @@
 from rest_framework import serializers
-from .models import Task, Solution
+from .models import Ticket
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-
+class TicketSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Task
-        fields = ('url', 'id', 'title', 'description', 'tests', 'public_tests', 'restrictions', 'owner')
+        model = Ticket
+        age = serializers.ReadOnlyField(default=-1)
+        prize = serializers.ReadOnlyField(default=-1)
+        fields = ('url', 'id', 'created', 'name', 'born', 'age', 'prize')
 
-
-class SolutionSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    task = serializers.HyperlinkedRelatedField(many=False, view_name='task-detail', queryset=Task.objects.all())
-    status = serializers.HiddenField(default=None)
-
-    class Meta:
-        model = Solution
-        fields = ('url', 'id', 'created', 'code', 'status', 'task', 'owner')
-
-
+    def create(self, validated_data):
+        del validated_data['owner']
+        validated_data['age'] = -1
+        validated_data['prize'] = -1
+        return Ticket.objects.create(**validated_data)
 

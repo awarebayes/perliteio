@@ -1,28 +1,22 @@
 from celery import shared_task
 from . import models
-import json
-import epicbox
-import pprint
+from datetime import date
+import time
+import random
+
+CHRISTMAS = date(1, 1, 1)
+
 
 @shared_task
 def check_solution(pk):
-    solution_object = models.Solution.objects.get(pk=pk)
-    print(solution_object.id, 'Code is:')
-    print(solution_object.code)
-    print('EXECUTING TASK')
-    print('Task tests are:')
-    tests = json.loads(solution_object.task.tests)
-    print(tests)
-    '''
-    code = str.encode(solution_object.code)
-    epicbox.configure(
-        profiles=[
-            epicbox.Profile('python', 'python:3.6.5-alpine')
-        ]
-    )
-    files = [{'name': 'main.py', 'content': code}]
-    limits = {'cputime': 1, 'memory': 64}
+    ticket_object = models.Ticket.objects.get(pk=pk)
 
-    result = epicbox.run('python', 'python3 main.py', stdin=list(tests.keys())[0], files=files, limits=limits)
-    pprint.pprint(result)
-    '''
+    # Do what you want with the ticket
+    ticket_object.age = (ticket_object.born - CHRISTMAS).days
+    random.seed(ticket_object.age)
+    ticket_object.prize = random.randint(1, 10000)
+    print("".join(["name: ", str(ticket_object.name), " ->age: ", str(ticket_object.age), " ->prize: ", str(ticket_object.prize)]))
+    time.sleep(5)
+
+    ticket_object.save()
+

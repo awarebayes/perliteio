@@ -21,7 +21,7 @@ services:
     stdin_open: true
     tty: true
     build: .
-    # command: python src/backend/manage.py migrate && celery -A src/backend/perliteio worker --loglevel=info
+    # command: bash -c "cd src/backend && python manage.py migrate && celery multy worker -A perliteio  --loglevel=info && python manage.py runserver 0.0.0.0:8000"
     environment:
       - EXECUTOR=Celery
     volumes:
